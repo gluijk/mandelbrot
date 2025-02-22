@@ -2,6 +2,7 @@
 # www.overfitting.net
 # https://www.overfitting.net/
 
+
 library(tiff)
 Gamma=2.2  # Gamma curve
 
@@ -147,8 +148,9 @@ for (i in 1:ITERA) {
     Mandel[indices] = Mandel[indices] + 1
     
     img=t(Mandel)
-    img[img==i]=0  # set black to current estimated Mandelbrot set
-    img=(img/max(img))^(1/Gamma)  # normalize output grayscale
+    img[img==i]=0  # set black current estimated Mandelbrot set
+    MAXIMG=max(img)
+    img=(img/ifelse(MAXIMG==0,1,MAXIMG))^(1/Gamma)  # normalize output grayscale
     img=img[nrow(img):1,]  # flip rows
     
     # Draw iteration number
@@ -161,16 +163,20 @@ for (i in 1:ITERA) {
     }
     label=t(label[,ncol(label):1])
     pos=which(label!=0)
-    img[1000:1062,1780:1898][pos]=1-img[1000:1062,1780:1898][pos]  
+    VAL=mean(img[1000:1062,1780:1898])
+    VAL=ifelse(VAL>0.5, 0, 1)
+    img[1000:1062,1780:1898][pos]=VAL
+    img[1001:1063,1781:1899][pos]=VAL
 
     # Colour frames
     img=replicate(3, img)
     img[,,1:2]=(sin(pi*(img[,,1:2]-1)+pi/2)+1)/2  # add R and G contrast
 
     # Iterations not rendered linearly
-    repeats=round((ITERA-i)^8/((ITERA-1)^(8-1))/3.33697002537963+1)
-    print(paste0("Saving iteration ", i, "/", ITERA, " for ", repeats, " times..."))
-    for (k in 1:repeats) {
+    repeatframe=round((ITERA-i)^8/((ITERA-1)^(8-1))/3.33697002537963+1)
+    print(paste0("Saving iteration ", i, "/", ITERA,
+                 " for ", repeatframe, " times..."))
+    for (k in 1:repeatframe) {
         name=paste0("mandelbrot", ifelse(j<10,'000', ifelse(j<100,'00',
                     ifelse(j<1000,'0',''))), j, ".tif")
         writeTIFF(img, name, bits.per.sample=16, compression="LZW")
