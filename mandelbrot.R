@@ -1,6 +1,6 @@
 # Animation of the Mandelbrot Set
 # www.overfitting.net
-# https://www.overfitting.net/
+# http://guillermoluijk.com/datosimagensonido/mandelbrot.mp4
 
 
 library(tiff)
